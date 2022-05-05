@@ -1,36 +1,40 @@
 #!/usr/bin/python3
-import utils
+import os
+import logging
 
+logging.basicConfig(
+    level=os.environ.get(
+        "LOG_LEVEL", "warning"
+    ).upper(),  # debug, info, warning, error, critical
+    format="[%(asctime)s][%(funcName)-8s][%(levelname)-8s]: %(message)s",
+)
 WARNING_LIMIT = 2
 
 
 def job(args: list):
-    utils.log(message="job", message_type="header", pause_duration=1)
     try:
         if len(args) > WARNING_LIMIT:
-            utils.log(message=f"Length longer than warning limit ({WARNING_LIMIT}).")
+            logging.warning(f"Length longer than warning limit ({WARNING_LIMIT}).")
     except TypeError:
-        utils.log(message="Not able to iterate over args")
+        logging.error("Not able to iterate over args")
         return "failed"
     number_args = [_ for _ in args if isinstance(_, int)]
-    utils.log(message=f"number_args: {number_args}")
+    logging.debug(f"number_args: {number_args}")
     string_args = [_ for _ in args if isinstance(_, str)]
-    utils.log(message=f"string_args: {string_args}")
+    logging.debug(f"string_args: {string_args}")
     if number_args and string_args:
-        utils.log(message="args consist of both strings and integers!")
+        logging.info("args consist of both strings and integers!")
     return "success"
 
 
 def run(args: list):
-    utils.log(message="run", message_type="header", pause_duration=1)
-    utils.log(message="started run")
+    logging.info("started run")
     status = job(args)
-    utils.log(message=f"status: {status}")
+    logging.debug(f"status: {status}")
 
 
 if __name__ == "__main__":
-    utils.log(message="main", message_type="header", pause_duration=1)
-    utils.log(message="script started")
+    logging.info("script started")
     run(args=[1, "a", 2, "b"])
     run(args=7)
-    utils.log(message="script completed")
+    logging.info("script completed")

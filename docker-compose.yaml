@@ -4,6 +4,8 @@ services:
   log-example:
     image: datajoint/djbase:py3.9-alpine
     user: ${HOST_UID}:anaconda
+    environment:
+      - LOG_LEVEL=DEBUG
     volumes:
       - ./example.py:/main/example.py
       - ./utils.py:/main/utils.py

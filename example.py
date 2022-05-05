@@ -22,10 +22,20 @@ file_handler = logging.handlers.RotatingFileHandler(
 )  # defaults to append to file
 file_handler.setFormatter(log_format)
 
+
+class CustomLogHandler(logging.Handler):
+    def emit(self, log_record):
+        log_storage.append(self.format(log_record))
+
+
+custom_handler = CustomLogHandler()
+custom_handler.setFormatter(log_format)
+
 log.setLevel(level=log_level)
-log.handlers = [stream_handler, file_handler]
+log.handlers = [stream_handler, file_handler, custom_handler]
 
 WARNING_LIMIT = 2
+log_storage = []
 
 # https://github.com/tqdm/tqdm/issues/313#issuecomment-267959111
 class TqdmToLogger(io.StringIO):
@@ -79,6 +89,7 @@ def job(args: list):
 
 
 def run(args: list):
+    # print(f"log_storage: {log_storage}", flush=True)
     log.info("started run")
     status = job(args)
     log.debug(f"status: {status}")

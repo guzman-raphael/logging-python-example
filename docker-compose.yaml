@@ -1,4 +1,4 @@
-# docker-compose down && HOST_UID=$(id -u) docker-compose up
+# mkdir logs; docker-compose down && HOST_UID=$(id -u) docker-compose up
 version: '2.4'
 services:
   log-example:
@@ -9,4 +9,5 @@ services:
     volumes:
       - ./example.py:/main/example.py
       - ./utils.py:/main/utils.py
+      - ./logs:/main/logs
     command: python ./example.py

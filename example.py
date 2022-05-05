@@ -1,7 +1,10 @@
-#!/usr/bin/python3
+#!/opt/conda/bin/python
 import os
 import logging
 import logging.handlers
+import tqdm
+import io
+import time
 
 log = logging.getLogger("Primary")
 log_level = os.environ.get(
@@ -15,7 +18,7 @@ stream_handler = logging.StreamHandler()  # default handler
 stream_handler.setFormatter(log_format)
 
 file_handler = logging.handlers.RotatingFileHandler(
-    "logs/example.log", maxBytes=300, backupCount=5
+    "logs/example.log", maxBytes=50 * 1024**1, backupCount=3
 )  # defaults to append to file
 file_handler.setFormatter(log_format)
 
@@ -23,6 +26,28 @@ log.setLevel(level=log_level)
 log.handlers = [stream_handler, file_handler]
 
 WARNING_LIMIT = 2
+
+# https://github.com/tqdm/tqdm/issues/313#issuecomment-267959111
+class TqdmToLogger(io.StringIO):
+    """
+    Output stream for TQDM which will output to logger module instead of
+    the StdOut.
+    """
+
+    logger = None
+    level = None
+    buf = ""
+
+    def __init__(self, logger, level=None):
+        super(TqdmToLogger, self).__init__()
+        self.logger = logger
+        self.level = level or logging.INFO
+
+    def write(self, buf):
+        self.buf = buf.strip("\r\n\t ")
+
+    def flush(self):
+        self.logger.log(self.level, self.buf)
 
 
 def job(args: list):
@@ -38,6 +63,18 @@ def job(args: list):
     log.debug(f"string_args: {string_args}")
     if number_args and string_args:
         log.info("args consist of both strings and integers!")
+
+    progress_total = 30
+    with tqdm.tqdm(
+        total=progress_total,
+        file=TqdmToLogger(log, level=logging.INFO),
+        # mininterval=2,
+    ) as pbar:
+        for i in range(progress_total):
+            log.info(f"processing: {i}")
+            time.sleep(0.1)
+            pbar.update(1)
+
     return "success"
 
 

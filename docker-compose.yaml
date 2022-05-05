@@ -10,4 +10,4 @@ services:
       - ./example.py:/main/example.py
       - ./utils.py:/main/utils.py
       - ./logs:/main/logs
-    command: python ./example.py
+    command: ./example.py

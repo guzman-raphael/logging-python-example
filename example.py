@@ -1,34 +1,36 @@
 #!/usr/bin/python3
+import utils
+
 WARNING_LIMIT = 2
 
 
 def job(args: list):
-    print("=== JOB ===", flush=True)
+    utils.log(message="job", message_type="header", pause_duration=1)
     try:
         if len(args) > WARNING_LIMIT:
-            print(f"Length longer than warning limit ({WARNING_LIMIT}).", flush=True)
+            utils.log(message=f"Length longer than warning limit ({WARNING_LIMIT}).")
     except TypeError:
-        print("Not able to iterate over args", flush=True)
+        utils.log(message="Not able to iterate over args")
         return "failed"
     number_args = [_ for _ in args if isinstance(_, int)]
-    print(f"number_args: {number_args}", flush=True)
+    utils.log(message=f"number_args: {number_args}")
     string_args = [_ for _ in args if isinstance(_, str)]
-    print(f"string_args: {string_args}", flush=True)
+    utils.log(message=f"string_args: {string_args}")
     if number_args and string_args:
-        print("args consist of both strings and integers!", flush=True)
+        utils.log(message="args consist of both strings and integers!")
     return "success"
 
 
 def run(args: list):
-    print("=== RUN ===", flush=True)
-    print(f"started run", flush=True)
+    utils.log(message="run", message_type="header", pause_duration=1)
+    utils.log(message="started run")
     status = job(args)
-    print(f"status: {status}", flush=True)
+    utils.log(message=f"status: {status}")
 
 
 if __name__ == "__main__":
-    print("=== MAIN ===", flush=True)
-    print(f"script started", flush=True)
+    utils.log(message="main", message_type="header", pause_duration=1)
+    utils.log(message="script started")
     run(args=[1, "a", 2, "b"])
     run(args=7)
-    print(f"script completed", flush=True)
+    utils.log(message="script completed")

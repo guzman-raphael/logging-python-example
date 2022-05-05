@@ -1,0 +1,10 @@
+# docker-compose down && HOST_UID=$(id -u) docker-compose up
+version: '2.4'
+services:
+  log-example:
+    image: datajoint/djbase:py3.9-alpine
+    user: ${HOST_UID}:anaconda
+    volumes:
+      - ./example.py:/main/example.py
+      - ./utils.py:/main/utils.py
+    command: python ./example.py

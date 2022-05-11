@@ -1,5 +1,6 @@
 #!/opt/conda/bin/python
 import os
+import sys
 import logging
 import logging.handlers
 import tqdm
@@ -11,7 +12,7 @@ log_level = os.environ.get(
     "LOG_LEVEL", "warning"
 ).upper()  # debug, info, warning, error, critical)
 log_format = logging.Formatter(
-    "[%(asctime)s][%(funcName)-8s][%(levelname)-8s]: %(message)s"
+    "[%(asctime)s][%(funcName)-10s][%(levelname)-8s]: %(message)s"
 )
 
 stream_handler = logging.StreamHandler()  # default handler
@@ -33,6 +34,20 @@ custom_handler.setFormatter(log_format)
 
 log.setLevel(level=log_level)
 log.handlers = [stream_handler, file_handler, custom_handler]
+
+
+def excepthook(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    if log.getEffectiveLevel() == 10:
+        log.debug("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    else:
+        log.error(f"Uncaught exception: {exc_value}")
+
+
+sys.excepthook = excepthook
 
 WARNING_LIMIT = 2
 log_storage = []
@@ -100,3 +115,5 @@ if __name__ == "__main__":
     run(args=[1, "a", 2, "b"])
     run(args=7)
     log.info("script completed")
+
+    raise Exception("Whoops!")

@@ -3,6 +3,7 @@ import tqdm
 import logging
 import time
 from new_logging import log_format, TqdmToLogger
+import graypy
 
 log = logging.getLogger("Primary")
 
@@ -16,6 +17,9 @@ custom_handler = CustomLogHandler()
 custom_handler.setFormatter(log_format)
 
 log.addHandler(custom_handler)
+
+graylog_handler = graypy.GELFUDPHandler("graylog", 12201)
+log.addHandler(graylog_handler)
 
 WARNING_LIMIT = 2
 log_storage = []

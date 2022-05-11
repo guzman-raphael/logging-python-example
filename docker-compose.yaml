@@ -8,6 +8,7 @@ services:
       - LOG_LEVEL=DEBUG
     volumes:
       - ./example.py:/main/example.py
+      - ./new_logging.py:/main/new_logging.py
       - ./utils.py:/main/utils.py
       - ./logs:/main/logs
     command: ./example.py
